@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/ca76ebdb24.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheet/style.css"/>
+    <script src="index.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container col-11 col-md-9 bg-white mt-5 pt-4 border border-2">
+        <h2 class="d-flex justify-content-center">To Do App</h2><br>
+        
+        <form method="post" action="/task">
+            <label for="task" class="form-label">Enter a task:</label>
+            <input type="text" name="description" class="form-control" id="task">
+            <button type="submit" class="btn btn-primary mt-2">Save</button>
+        </form>
+
+        <table class="table table-borderless mt-5">
+            <thead class="border-2 border-start-0 border-end-0">
+                <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Todo item</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+                
+            <% if (tasks.length > 0) { %>
+                <tbody>
+                    <% tasks.forEach(task => { %>
+                        <tr class="border-bottom"></tr>
+                            <th scope="row" class="text-break"><%= task._id %></th>
+                            <td><%= task.description; %></td>
+                            <% const Inc = "Incomplete"; %>
+                            <% const Comp = "Complete"; %>
+                            <% var d; %>
+                            <% var but; %>
+                            <% if (task.isComplete) { %>
+                                <% d = Comp; %>
+                                <% but = Inc; %>
+                            <% } else { %>
+                                <% d = Inc; %>
+                                <% but = Comp; %>
+                            <% } %>
+                            <td><%= d %></td>
+                            <td class="d-flex flex-wrap">
+                                <button type="submit" class="deleteb btn btn-danger me-2 mb-2" data-doc="<%=task.description%>">Delete</button>
+                                <button type="submit" class="updateb btn btn-success mb-2" data-doc="<%=task.description%>"><%= but %></button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            </table>
+            <h2>Nothing to do</h2>
+        <% } %>
+    </div>
+    <script>
+        const trashcan1 = document.querySelector('button.deleteb');
+        trashcan1.addEventListener('click', (e) => {
+            const endpoint = `/task/${trashcan1.dataset.doc}`;
+            fetch(endpoint, {
+                method: 'DELETE'
+            })
+            .then((response) => response.json())
+            .then((data) => window.location.href = data.redirect)
+            .catch(err => console.log(err));
+        })
+
+        const trashcan2 = document.querySelector('button.updateb');
+        trashcan2.addEventListener('click', (e) => {
+            const endpoint = `/task/toggle/${trashcan2.dataset.doc}`;
+            fetch(endpoint, {
+                method: 'PUT'
+            })
+            .then((response) => response.json())
+            .then((data) => window.location.href = data.redirect)
+            .catch(err => console.log(err));
+        })
+    </script>
+</body>
+</html>
